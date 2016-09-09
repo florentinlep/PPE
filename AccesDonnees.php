@@ -6,7 +6,7 @@
  * 
  * @author Erwan
  * @copyright Estran
- * @version 4.0 Jeudi 02 Septembre 2016
+ * @version 4.0 Vendredi 09 Septembre 2016
  *
  * Début implementation PDO
  */
