@@ -69,3 +69,17 @@ INSERT INTO `test2` (`numero`, `info`) VALUES
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+
+CREATE TABLE IF NOT EXISTS `matable` (
+  `macolonne` varchar(10) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Contenu de la table `matable`
+--
+
+INSERT INTO `matable` (`macolonne`) VALUES
+('valeur1'),
+('valeur2'),
+('valeur3');

@@ -18,11 +18,11 @@
 			break;
 			
 		case 31 :
-			//local
-			$host = "127.0.0.1";
-			$user = "u487153086_user";
-			$password = "";
-			$dbname = "u487153086_si6";
+			//hostinger
+			$host = "mysql.hostinger.fr";
+			$user = "u627393142_user";
+			$password = "P@ssword";
+			$dbname = "u627393142_slam4";
 			$port='3306';
 			break;
 			
