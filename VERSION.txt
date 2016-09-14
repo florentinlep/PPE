@@ -5,13 +5,18 @@
  * 
  * @author Erwan
  * @copyright Estran
- * @derniere version :  V4.0 
- *        du Vendredi 02 Septembre 2016
- *  
- *   
- * 	
- * 
+ * @version 4.1 Mardi 09 Septembre 2016
+ *
+ * Implementation PDO des fonctions :
+ *    - connexion OK
+ *    - executeSQL OK
+ *    
  */
+ 
+ V4.1 du Mardi 9 Septembre 2016
+  +	Implementation PDO de la fonction 'connexion' 
+  +	Implementation PDO de la fonction 'executeSQL'
+ 
  
  V4.0 du Vendredi 2 Septembre 2016
   + Début implementation PDO
