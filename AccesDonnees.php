@@ -6,18 +6,21 @@
  * 
  * @author Erwan
  * @copyright Estran
- * @version 4.0 Vendredi 09 Septembre 2016
+ * @version 4.1 Mardi 09 Septembre 2016
  *
- * Début implementation PDO
+ * Implementation PDO des fonctions :
+ *    - connexion OK
+ *    - executeSQL OK
+ *    
  */
 
 ///////////// CONFIGURATION DE L'ACCES AUX DONNEES ////////////////////
 
-// nom du moteur d'accès à la base : mysql - mysqli
-$modeacces = "mysqli";
+// nom du moteur d'accès à la base : mysql - mysqli - pdo
+$modeacces = "pdo";
 
 // enregistrement des logs de connexion : true - false
-$logcnx = FALSE;
+$logcnx = TRUE;
 
 // enregistrement des requetes SQL : none - all - modif
 $logsql = "none";
@@ -71,7 +74,42 @@ function connexion($host,$port,$dbname,$user,$password) {
 	
 	global $modeacces, $logcnx, $connexion;
 	
-
+	
+	
+	
+	
+	/*  TEST CNX PDO
+	 * 
+	 */
+	if ($modeacces=="pdo") {
+		// ceation du Data Source Name, ou DSN, qui contient les infos
+		// requises pour se connecter à la base.
+		$dsn='mysql:host='.$host.';port='.$port.';dbname='.$dbname;
+		
+		try
+		{
+			$connexion = new PDO($dsn, $user, $password);
+		}
+		
+		catch(Exception $e)
+		{
+			/*echo 'Erreur : '.$e->getMessage().'<br />';
+			echo 'N° : '.$e->getCode();
+			die();*/
+			$chaine = "Connexion PB - ".date("j M Y - G:i:s - ").$user." - ". $e->getCode() . " - ". $e->getMessage()."\r\n";
+			$connexion = FALSE;
+		}
+		
+		if ($connexion) {
+			$chaine = "Connexion OK - ".date("j M Y - G:i:s - ").$user."\r\n";
+		}
+		
+	}
+	
+	
+	
+	
+	
 	
 	if ($modeacces=="mysql") {
 			
@@ -112,13 +150,11 @@ function connexion($host,$port,$dbname,$user,$password) {
 			fwrite($handle,$chaine);
 		fclose($handle);	
 	} else {
-		echo $chaine."<br />";
+		//echo $chaine."<br />";
 	}
 	return $connexion;
 	
 }
-
-
 
 
 
@@ -180,6 +216,11 @@ function executeSQL($sql) {
 	
 	}
 
+	if ($modeacces=="pdo") {
+		$result = $connexion->exec($sql)
+		 or die ( afficheErreur($sql,$connexion->errorInfo()[2]));
+	}
+	
 	if ($modeacces=="mysql") {
 		$result = mysql_query($sql)		
 		or die (afficheErreur($sql, mysql_error()));		
