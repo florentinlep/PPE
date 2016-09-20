@@ -6,11 +6,10 @@
  * 
  * @author Erwan
  * @copyright Estran
- * @version 4.1 Mardi 09 Septembre 2016
+ * @version 4.2 Mardi 20 Septembre 2016
  *
  * Implementation PDO des fonctions :
- *    - connexion OK
- *    - executeSQL OK
+
  *    
  */
 
@@ -273,14 +272,25 @@ function compteSQL($sql) {
 
 	global $modeacces, $connexion;
 	
-	$result = executeSQL($sql);
+
+	if ($modeacces="pdo") {
+		//utilisation d'une requete prepare 
+		$reqprep=$connexion->prepare($sql);
+		//execution de la requete preparee
+		$reqprep->execute();
+		$num_rows=$reqprep->rowCount();
+		return $num_rows;
+	}
+	
 
 	if ($modeacces=="mysql") {
+		$result = executeSQL($sql);
 		$num_rows = mysql_num_rows($result);
 		return $num_rows;
 	}
 
 	if ($modeacces=="mysqli") {
+		$result = executeSQL($sql);
 		$num_rows = $connexion->affected_rows;
 		return $num_rows;
 	}

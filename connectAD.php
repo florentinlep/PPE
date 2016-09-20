@@ -2,8 +2,6 @@
 	include "AccesDonnees.php";
 
 	$ip=explode(".",$_SERVER['SERVER_ADDR']);
-	
-	echo "test : ".$ip[0];
 
 	switch ($ip[0]) {
 
@@ -13,7 +11,7 @@
 			$host = "127.0.0.1";
 			$user = "root";
 			$password = "";
-			$dbname = "SI6";
+			$dbname = "slam4";
 			$port='3306';
 			break;
 			
