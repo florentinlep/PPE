@@ -1,0 +1,21 @@
+Connexion PB - 20 Sep 2016 - 15:57:54 - root - 1049 - SQLSTATE[HY000] [1049] Unknown database 'si6'
+Selection base PB - 20 Sep 2016 - 15:58:24 - root - Unknown database 'si6'
+Selection base PB - 20 Sep 2016 - 15:58:26 - root - Unknown database 'si6'
+Selection base PB - 20 Sep 2016 - 15:58:31 - root - Unknown database 'si6'
+Selection base PB - 20 Sep 2016 - 15:58:36 - root - Unknown database 'si6'
+Selection base PB - 20 Sep 2016 - 15:59:17 - root - Unknown database 'si6'
+Connexion OK - 20 Sep 2016 - 15:59:32 - root
+Connexion OK - 20 Sep 2016 - 15:59:44 - root
+Connexion OK - 20 Sep 2016 - 16:00:25 - root
+Connexion OK - 20 Sep 2016 - 16:00:36 - root
+Connexion OK - 20 Sep 2016 - 16:00:49 - root
+Connexion OK - 20 Sep 2016 - 16:01:22 - root
+Connexion OK - 20 Sep 2016 - 16:32:25 - root
+Connexion OK - 20 Sep 2016 - 16:32:42 - root
+Connexion OK - 20 Sep 2016 - 16:32:58 - root
+Connexion OK - 20 Sep 2016 - 16:35:29 - root
+Connexion OK - 20 Sep 2016 - 16:38:39 - root
+Connexion OK - 20 Sep 2016 - 16:38:44 - root
+Connexion OK - 20 Sep 2016 - 16:40:04 - root
+Connexion OK - 20 Sep 2016 - 16:40:33 - root
+Connexion OK - 20 Sep 2016 - 16:40:35 - root

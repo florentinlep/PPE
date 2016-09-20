@@ -6,17 +6,18 @@
  * 
  * @author Erwan
  * @copyright Estran
- * @version 4.2 Mardi 20 Septembre 2016
+ * @version 4.5 Mardi 20 Septembre 2016
  *
  * Implementation PDO des fonctions :
-
+ *    + compteSQL
+ *    + tableSQL
  *    
  */
 
 ///////////// CONFIGURATION DE L'ACCES AUX DONNEES ////////////////////
 
 // nom du moteur d'accès à la base : mysql - mysqli - pdo
-$modeacces = "pdo";
+$modeacces = "mysqli";
 
 // enregistrement des logs de connexion : true - false
 $logcnx = TRUE;
@@ -216,7 +217,7 @@ function executeSQL($sql) {
 	}
 
 	if ($modeacces=="pdo") {
-		$result = $connexion->exec($sql)
+		$result = $connexion->query($sql)
 		 or die ( afficheErreur($sql,$connexion->errorInfo()[2]));
 	}
 	
@@ -326,6 +327,11 @@ function tableSQL($sql) {
 	
 	$result = executeSQL($sql);
 	$rows=array();
+	
+	if ($modeacces=="pdo") {
+		$rows = $result->fetchAll(PDO::FETCH_BOTH);
+		return $rows;
+	}
 
 	if ($modeacces=="mysql") {
 		while ($row = mysql_fetch_array($result, MYSQL_BOTH)) {
