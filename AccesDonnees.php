@@ -11,13 +11,17 @@
  * Implementation PDO des fonctions :
  *    + compteSQL
  *    + tableSQL
+ *    + compteSQL
+ *    + champSQL
+ *    + versionSQL
+ *    
  *    
  */
 
 ///////////// CONFIGURATION DE L'ACCES AUX DONNEES ////////////////////
 
 // nom du moteur d'accès à la base : mysql - mysqli - pdo
-$modeacces = "mysqli";
+$modeacces = "pdo";
 
 // enregistrement des logs de connexion : true - false
 $logcnx = TRUE;
@@ -73,11 +77,7 @@ $mysql_data_type_hash = array(
 function connexion($host,$port,$dbname,$user,$password) {
 	
 	global $modeacces, $logcnx, $connexion;
-	
-	
-	
-	
-	
+
 	/*  TEST CNX PDO
 	 * 
 	 */
@@ -273,29 +273,26 @@ function compteSQL($sql) {
 
 	global $modeacces, $connexion;
 	
-
 	if ($modeacces="pdo") {
 		//utilisation d'une requete prepare 
 		$reqprep=$connexion->prepare($sql);
 		//execution de la requete preparee
 		$reqprep->execute();
 		$num_rows=$reqprep->rowCount();
-		return $num_rows;
 	}
-	
 
 	if ($modeacces=="mysql") {
 		$result = executeSQL($sql);
 		$num_rows = mysql_num_rows($result);
-		return $num_rows;
 	}
 
 	if ($modeacces=="mysqli") {
 		$result = executeSQL($sql);
 		$num_rows = $connexion->affected_rows;
-		return $num_rows;
+	
 	}
-
+	
+	return $num_rows;
 }
 
 
@@ -330,23 +327,22 @@ function tableSQL($sql) {
 	
 	if ($modeacces=="pdo") {
 		$rows = $result->fetchAll(PDO::FETCH_BOTH);
-		return $rows;
 	}
 
 	if ($modeacces=="mysql") {
 		while ($row = mysql_fetch_array($result, MYSQL_BOTH)) {
 			array_push($rows,$row);
 		}
-		return $rows;
 	}
 
 	if ($modeacces=="mysqli") {
 		while ($row = $result->fetch_array(MYSQLI_BOTH)) {
 			array_push($rows,$row);
 		}
-		return $rows;
-	}
 
+	}
+		
+	return $rows;
 }
 
 
@@ -366,16 +362,20 @@ function champSQL($sql) {
 	
 	$result = executeSQL($sql);
 	
+	if ($modeacces="pdo") {
+		$rows=$result->fetch(PDO::FETCH_BOTH);	
+	}
+	
 	if ($modeacces=="mysql") {
 		$rows = mysql_fetch_array($result, MYSQL_NUM);
-		return $rows[0];
 	}
 
 	if ($modeacces=="mysqli") {
 		$rows = $result->fetch_array(MYSQLI_NUM);
-		return $rows[0];
+		
 	}
-
+	
+	return $rows[0];
 }
 
 
@@ -394,13 +394,21 @@ function nombrechamp($sql) {
 
 	global $modeacces, $connexion;
 	
-	$result = executeSQL($sql);
+	if ($modeacces="pdo") {
+		//utilisation d'une requete prepare
+		$reqprep=$connexion->prepare($sql);
+		//execution de la requete preparee
+		$reqprep->execute();
+		return $reqprep->columnCount();
+	}
 
 	if ($modeacces=="mysql") {
+		$result = executeSQL($sql);
 		return mysql_num_fields($result);
 	}
 
 	if ($modeacces=="mysqli") {
+		$result = executeSQL($sql);
 		return  $result->field_count;
 	}
 
@@ -421,11 +429,24 @@ function nombrechamp($sql) {
  * @return Retourne le type du champ retourné peut être : "int", "real", "string", "blob" 
  *         ou d'autres, comme détaillé » dans la documentation MySQL.
  */
+
+//TODO verifier la coherence des type
 function typechamp($sql, $field_offset) {
 
 	global $modeacces, $connexion, $mysql_data_type_hash;
 
 	$result = executeSQL($sql);
+	
+	
+	if ($modeacces=="pdo") {
+	
+		/* getColumnMeta est EXPERIMENTALE. Cela signifie que le comportement de cette fonction, son nom et,
+		 * concrètement, TOUT ce qui est documenté ici peut changer dans un futur proche, SANS PREAVIS !
+		 * Soyez-en conscient, et utilisez cette fonction à vos risques et périls. */
+		$select = $connexion->query($sql);
+		$meta = $select->getColumnMeta($field_offset);
+		return ($meta["native_type"]);
+	}
 	
 	if ($modeacces=="mysql") {
 		return mysql_field_type($result, $field_offset);
@@ -449,6 +470,10 @@ function typechamp($sql, $field_offset) {
 function versionMYSQL() {
 
 	global $modeacces, $connexion;
+	
+	if ($modeacces="pdo") {
+		return $connexion->getAttribute(constant("PDO::ATTR_SERVER_VERSION"));
+	}
 
 	if ($modeacces=="mysql") {
 		return mysql_get_server_info();
