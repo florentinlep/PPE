@@ -6,7 +6,7 @@
  * 
  * @author Erwan
  * @copyright Estran
- * @version 4.5 Mardi 20 Septembre 2016
+ * @version 4.5.1 Vendredi 23 Septembre 2016
  *
  * Implementation PDO des fonctions :
  *    + compteSQL
@@ -18,10 +18,11 @@
  *    
  */
 
+
 ///////////// CONFIGURATION DE L'ACCES AUX DONNEES ////////////////////
 
 // nom du moteur d'accès à la base : mysql - mysqli - pdo
-$modeacces = "pdo";
+$modeacces = "mysql";
 
 // enregistrement des logs de connexion : true - false
 $logcnx = TRUE;
@@ -29,10 +30,7 @@ $logcnx = TRUE;
 // enregistrement des requetes SQL : none - all - modif
 $logsql = "none";
 
-
 //////////////////////////////////////////////////////////////////////
-
-
 
 $mysql_data_type_hash = array(
 		1=>'tinyint',
@@ -50,10 +48,12 @@ $mysql_data_type_hash = array(
 		16=>'bit',
 		//252 is currently mapped to all text and blob types (MySQL 5.0.51a)
 		252=>'blob',
-		253=>'varchar',
+		253=>'string',
 		254=>'string',
 		246=>'decimal'
 );
+
+
 
 
 
@@ -77,7 +77,11 @@ $mysql_data_type_hash = array(
 function connexion($host,$port,$dbname,$user,$password) {
 	
 	global $modeacces, $logcnx, $connexion;
-
+	
+	
+	
+	
+	
 	/*  TEST CNX PDO
 	 * 
 	 */
@@ -166,6 +170,10 @@ function connexion($host,$port,$dbname,$user,$password) {
 function deconnexion() {
 	
 	global $modeacces, $connexion;
+	
+	if ($modeacces=="pdo") {
+		$connexion=NULL;
+	}
 
 	if ($modeacces=="mysql") {
 		mysql_close();
@@ -259,43 +267,6 @@ function ecritRequeteSQL($uneChaine) {
 }
 
 
-/**
- *
- *Retourne le nombre de lignes d'une requete MySQL.
- * @param sql string
- *  <p>Requete SQL.</p>
- *
- *
- * @return Le nombre de lignes dans un jeu de résultats en cas de succès 
- *         ou FALSE si une erreur survient. 
- */
-function compteSQL($sql) {
-
-	global $modeacces, $connexion;
-	
-	if ($modeacces="pdo") {
-		//utilisation d'une requete prepare 
-		$reqprep=$connexion->prepare($sql);
-		//execution de la requete preparee
-		$reqprep->execute();
-		$num_rows=$reqprep->rowCount();
-	}
-
-	if ($modeacces=="mysql") {
-		$result = executeSQL($sql);
-		$num_rows = mysql_num_rows($result);
-	}
-
-	if ($modeacces=="mysqli") {
-		$result = executeSQL($sql);
-		$num_rows = $connexion->affected_rows;
-	
-	}
-	
-	return $num_rows;
-}
-
-
 
 /**
  *
@@ -326,23 +297,66 @@ function tableSQL($sql) {
 	$rows=array();
 	
 	if ($modeacces=="pdo") {
+		//while ($row = $result->fetch(PDO::FETCH_BOTH)) {
+		//	array_push($rows,$row);
+		//}
 		$rows = $result->fetchAll(PDO::FETCH_BOTH);
+		//return $rows;
 	}
+	
 
 	if ($modeacces=="mysql") {
 		while ($row = mysql_fetch_array($result, MYSQL_BOTH)) {
 			array_push($rows,$row);
 		}
+		//return $rows;
 	}
 
 	if ($modeacces=="mysqli") {
-		while ($row = $result->fetch_array(MYSQLI_BOTH)) {
-			array_push($rows,$row);
-		}
-
+		//while ($row = $result->fetch_array(MYSQLI_BOTH)) {
+		//	array_push($rows,$row);
+		//}
+		$rows = $result->fetch_all(MYSQLI_BOTH);
+		//return $rows;
 	}
-		
+
 	return $rows;
+}
+
+
+
+/**
+ *
+ *Retourne le nombre de lignes d'une requete MySQL.
+ * @param sql string
+ *  <p>Requete SQL.</p>
+ *
+ *
+ * @return Le nombre de lignes dans un jeu de résultats en cas de succès
+ *         ou FALSE si une erreur survient.
+ */
+function compteSQL($sql) {
+
+	global $modeacces, $connexion;
+	
+	if ($modeacces=="pdo") {	
+		//utilisation d'une requete preparee
+		$repueteP=$connexion->prepare($sql);
+		$repueteP->execute();
+		$num_rows = $repueteP->rowCount();	
+	}
+
+	if ($modeacces=="mysql") {
+		$result = executeSQL($sql);
+		$num_rows = mysql_num_rows($result);
+	}
+
+	if ($modeacces=="mysqli") {
+		$result = executeSQL($sql);
+		$num_rows = $connexion->affected_rows;
+	}
+	
+	return $num_rows;
 }
 
 
@@ -362,8 +376,8 @@ function champSQL($sql) {
 	
 	$result = executeSQL($sql);
 	
-	if ($modeacces="pdo") {
-		$rows=$result->fetch(PDO::FETCH_BOTH);	
+	if ($modeacces=="pdo") {
+		$rows = $result->fetch(PDO::FETCH_BOTH);
 	}
 	
 	if ($modeacces=="mysql") {
@@ -372,9 +386,8 @@ function champSQL($sql) {
 
 	if ($modeacces=="mysqli") {
 		$rows = $result->fetch_array(MYSQLI_NUM);
-		
 	}
-	
+
 	return $rows[0];
 }
 
@@ -390,16 +403,16 @@ function champSQL($sql) {
  * @return Retourne le nombre de champs d'un jeu de résultat en cas de succès 
  *         ou FALSE si une erreur survient. 
  */
-function nombrechamp($sql) {
+function nombreChamp($sql) {
 
 	global $modeacces, $connexion;
 	
-	if ($modeacces="pdo") {
-		//utilisation d'une requete prepare
-		$reqprep=$connexion->prepare($sql);
-		//execution de la requete preparee
-		$reqprep->execute();
-		return $reqprep->columnCount();
+	if ($modeacces=="pdo") {
+		//utilisation d'une requete preparee
+		$requeteP=$connexion->prepare($sql);
+		$requeteP->execute();
+		$num_rows = $requeteP->columnCount();
+		return $num_rows;
 	}
 
 	if ($modeacces=="mysql") {
@@ -428,24 +441,36 @@ function nombrechamp($sql) {
  *
  * @return Retourne le type du champ retourné peut être : "int", "real", "string", "blob" 
  *         ou d'autres, comme détaillé » dans la documentation MySQL.
+ * TODO revoir la valeur du type qui est renvoye
+ * 
  */
-
-//TODO verifier la coherence des type
-function typechamp($sql, $field_offset) {
+function typeChamp($sql, $field_offset) {
 
 	global $modeacces, $connexion, $mysql_data_type_hash;
 
 	$result = executeSQL($sql);
 	
-	
 	if ($modeacces=="pdo") {
-	
-		/* getColumnMeta est EXPERIMENTALE. Cela signifie que le comportement de cette fonction, son nom et,
-		 * concrètement, TOUT ce qui est documenté ici peut changer dans un futur proche, SANS PREAVIS !
-		 * Soyez-en conscient, et utilisez cette fonction à vos risques et périls. */
-		$select = $connexion->query($sql);
-		$meta = $select->getColumnMeta($field_offset);
-		return ($meta["native_type"]);
+		
+		$posfrom = strpos(strtolower($sql), "from");
+		$newsql = substr($sql, $posfrom+5, strlen($sql)-5-$posfrom);
+		$nomtables = explode(',',$newsql);
+		$nomtable = trim($nomtables[0]);
+		//echo "$nomtable<br />";
+		$recordset = $connexion->query("SHOW COLUMNS FROM $nomtable");
+		$fields = $recordset->fetchAll(PDO::FETCH_ASSOC);
+		//var_dump($fields);
+		$letype = ($fields[$field_offset]["Type"]);
+		
+		if (stristr($letype,'varchar')!=FALSE) {
+			$letype="string";
+		}
+		
+		if (stristr($letype,'int')!=FALSE) {
+			$letype="int";
+		}
+		
+		return $letype;		
 	}
 	
 	if ($modeacces=="mysql") {
@@ -459,6 +484,56 @@ function typechamp($sql, $field_offset) {
 }
 
 
+
+/**
+ *
+ *Retourne le nom d'une colonne MySQL spécifique
+ * @param sql string
+ *  <p>Requete SQL.</p>
+ * @param field_offset integer
+ *  <p>La position numérique du champ. field_offset commence à 0. Si field_offset 
+ *     n'existe pas, une alerte E_WARNING sera également générée.</p>
+ *
+ *
+ * @return Retourne le nom du champ d'une colonne spécifique
+  * 
+ */
+function nomChamp($sql, $field_offset) {
+
+	global $modeacces, $connexion, $mysql_data_type_hash;
+
+
+
+	/* getColumnMeta est EXPERIMENTALE. Cela signifie que le comportement de cette fonction, son nom et,
+	 * concrètement, TOUT ce qui est documenté ici peut changer dans un futur proche, SANS PREAVIS ! 
+	 * Soyez-en conscient, et utilisez cette fonction à vos risques et périls.
+	 */
+	if ($modeacces=="pdo") {
+		//utilisation d'une requete preparee
+		$requeteP=$connexion->prepare($sql);
+		$requeteP->execute();
+		$fields = $requeteP->fetch(PDO::FETCH_ASSOC);
+		var_dump($fields);
+		/*$select = $connexion->query($sql);
+		  $meta = $select->getColumnMeta($field_offset);
+		  return ($meta["name"]);
+		 */
+	}
+
+	if ($modeacces=="mysql") {
+		$result = executeSQL($sql);
+		return mysql_field_name($result, $field_offset);
+	}
+
+	if ($modeacces=="mysqli") {
+		$result = executeSQL($sql);
+		return  $mysql_data_type_hash[$result->fetch_field_direct($field_offset)->type];
+	}
+
+}
+
+
+
 /**
  *
  *Retourne la version du serveur MySQL
@@ -470,11 +545,11 @@ function typechamp($sql, $field_offset) {
 function versionMYSQL() {
 
 	global $modeacces, $connexion;
-	
-	if ($modeacces="pdo") {
+
+	if ($modeacces=="pdo") {
 		return $connexion->getAttribute(constant("PDO::ATTR_SERVER_VERSION"));
 	}
-
+	
 	if ($modeacces=="mysql") {
 		return mysql_get_server_info();
 	}
@@ -484,6 +559,7 @@ function versionMYSQL() {
 	}
 
 }
+
 
 
 
