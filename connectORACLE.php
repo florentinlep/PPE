@@ -16,10 +16,6 @@
 	}
 
 	echo "<hr />";
-
-
-	//configurer le driver PDO Oracle dans le fichier php.ini
-	//     extension=php_pdo_oci.dll
 	
 	
 	$host='10.0.220.100';    	// le chemin vers le serveur
@@ -32,7 +28,7 @@
 	// ceation du Data Source Name, ou DSN, qui contient les infos
 	// requises pour se connecter à la base en PDO driver mysql.
 	// exemple : mysql:host=10.100.22.20;port=1521;dbname=ora18sdis29
-	$dsn='mysql:host='.$host.';port='.$port.';dbname='.$dbname;
+	//$dsn='mysql:host='.$host.';port='.$port.';dbname='.$dbname;
 	
 	// ceation du Data Source Name, ou DSN, qui contient les infos
 	// requises pour se connecter à la base en PDO driver oracle.
@@ -70,13 +66,14 @@
 	}
 
 	echo "<hr />";
- 
-	/*$conn = oci_connect('scott', 'tiger', '10.0.220.100:1521/ORAPROF');
+ /*
+    //connexion oracle native
+  	$conn = oci_connect('scott', 'tiger', '10.0.220.100:1521/ORAPROF');
 	if (!$conn) {
 		$e = oci_error();
 	    trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
 	}
-	*/
-
+	
+*/
 ?>
 
