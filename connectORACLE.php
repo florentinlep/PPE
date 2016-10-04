@@ -1,12 +1,21 @@
 <?php
+   	
+   	//copier instantclient_10_2 (32bits)
+	//dans le repertoire bin d'apache
 
-echo "Liste des drivers PDO<br />";
-foreach(PDO::getAvailableDrivers() as $driver)
-	echo $driver,"<br />";
-
-	//$test = getenv('LD_LIBRARY_PATH')."  ".getenv('ORACLE_HOME');
+	//configurer le driver PDO Oracle dans le fichier php.ini
+	//     extension=php_pdo_oci.dll
+	//     extension=php_oci8.dll
 	
-echo "<hr />";	
+
+	
+	
+	echo "Liste des drivers PDO<br />";
+	foreach (PDO::getAvailableDrivers() as $driver) {
+		echo $driver,"<br />";
+	}
+
+	echo "<hr />";
 
 
 	//configurer le driver PDO Oracle dans le fichier php.ini
@@ -15,9 +24,9 @@ echo "<hr />";
 	
 	$host='10.0.220.100';    	// le chemin vers le serveur
 	$port='1521';				// 1521 port pour oracle 3306 pour mysql
-	$dbname='ORAPROF';  	        // le nom de votre base de données ou du service oracle
-	$user='scott';  			    // nom d'utilisateur pour se connecter
-	$password='tiger';       // mot de passe de l'utilisateur
+	$dbname='ORAPROF';  	    // le nom de votre base de données ou du service oracle
+	$user='scott';  			// nom d'utilisateur pour se connecter
+	$password='tiger';          // mot de passe de l'utilisateur
 
 	
 	// ceation du Data Source Name, ou DSN, qui contient les infos
@@ -31,7 +40,7 @@ echo "<hr />";
 	$dsn='oci:dbname=//'.$host.':'.$port.'/'.$dbname;
 	
 
-	echo "DSN : $dsn<br />";
+	echo "DSN = $dsn<hr />";
 	
 	try
 	{
@@ -42,40 +51,32 @@ echo "<hr />";
 	{
 		echo 'Erreur : '.$e->getMessage().'<br />';
 		echo 'N° : '.$e->getCode();
-		//die();
+		die();
 	}	
 
-	/*echo "Connexion ouverte<br />";	
+	echo "Connexion ouverte<br />";	
 	
 	if ($connexion) {
 		
 		// on va chercher tous les infos de la table
-		$resultats=$connexion->query("SELECT * FROM EMP;");
-		
-		// on récupére le résultat sous forme d'objet
-		$resultats->setFetchMode(PDO::FETCH_OBJ);
-		
-		// on récupère la liste des infos
-		while( $ligne = $resultats->fetch() )
-		{
-			// on affiche les infos
-			echo "Information : $ligne->ENAME <br />";
-		}
+        $resultats = $connexion->query("SELECT * FROM emp" );
+     
+        foreach ($resultats as $ligne) {
+        echo $ligne['EMPNO']." ".$ligne[1]."<br />";
+        }
 		
 		$connexion = NULL ; // Fermeture de la connexion
 		echo "Connexion fermee";
 	}
-*/
-	phpinfo();
+
 	echo "<hr />";
  
-	$conn = oci_connect('scott', 'tiger', '10.0.220.100:1521/ORAPROF');
+	/*$conn = oci_connect('scott', 'tiger', '10.0.220.100:1521/ORAPROF');
 	if (!$conn) {
 		$e = oci_error();
-		var_dump($e);
-		//trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
+	    trigger_error(htmlentities($e['message'], ENT_QUOTES), E_USER_ERROR);
 	}
-	
+	*/
 
 ?>
 
